@@ -1,7 +1,18 @@
 package org.timgroup.dojo
 
 trait Munging {
-  def parseLine(line: Seq[String], labelCol: Int, col1: Int, col2: Int) = {
+  def mungeDifference(lines: List[String], labelCol: Int, col1: Int, col2: Int) = {
+    val lineMatchRegex = """^\s+\d.*""".r
+    lines.filter(lineMatchRegex.findFirstMatchIn(_).isDefined)
+      .map(_.trim.split("""\s+"""))
+      .map(parseLine(labelCol, col1, col2))
+      .map(cleanTuple)
+      .map(calculateDiff)
+      .sortWith(orderTuple)
+      .head._1
+  }
+
+  def parseLine(labelCol: Int, col1: Int, col2: Int)(line: Array[String]) = {
     (line(labelCol), line(col1), line(col2))
   }
 
